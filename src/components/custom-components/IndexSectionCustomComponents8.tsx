@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 interface ProductProps {
   name: string;
@@ -51,49 +50,33 @@ const ProductCard: React.FC<ProductProps> = ({ name, price, oldPrice, img, ratin
   </div>
 );
 
-const AutoScrollRow: React.FC<{ title: string; href: string; products: ProductProps[]; duration?: number; direction?: 'left' | 'right' }> = ({
-  title,
-  href,
-  products,
-  duration = 30,
-  direction = 'left',
-}) => {
-  const [paused, setPaused] = useState(false);
-  const duplicated = [...products, ...products];
-  const animateX = direction === 'left' ? ['0%', '-50%'] : ['-50%', '0%'];
+const ScrollableRow: React.FC<{ title: string; href: string; children: React.ReactNode }> = ({ title, href, children }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({ left: dir === 'left' ? -280 : 280, behavior: 'smooth' });
+  };
 
   return (
     <div className="mb-10">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-xl md:text-2xl font-bold font-heading text-neutral-900 tracking-tight">{title}</h3>
-          <Link href={href} className="inline-flex items-center gap-1 px-5 py-2 bg-navy-500 text-white font-semibold text-sm rounded-full hover:bg-navy-600 transition-colors">
-            Shop All
-            <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
-          </Link>
+          <div className="flex items-center gap-3">
+            <button onClick={() => scroll('left')} className="w-9 h-9 rounded-full bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <button onClick={() => scroll('right')} className="w-9 h-9 rounded-full bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+            <Link href={href} className="hidden sm:inline-flex items-center gap-1 px-5 py-2 bg-navy-500 text-white font-semibold text-sm rounded-full hover:bg-navy-600 transition-colors">
+              Shop All
+              <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
+            </Link>
+          </div>
         </div>
       </div>
-      <div
-        className="overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
-      >
-        <motion.div
-          className="flex gap-4 px-4"
-          animate={{ x: paused ? undefined : animateX }}
-          transition={{
-            x: {
-              duration,
-              repeat: Infinity,
-              ease: 'linear',
-            },
-          }}
-          style={{ width: 'max-content' }}
-        >
-          {duplicated.map((p, i) => <ProductCard key={i} {...p} />)}
-        </motion.div>
+      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide px-4">
+        {children}
       </div>
     </div>
   );
@@ -150,9 +133,17 @@ const IndexSectionCustomComponents8: React.FC = () => {
         </div>
       </div>
 
-      <AutoScrollRow title="Trending Deals" href="/category/personal-care" products={trendingDeals} duration={28} direction="left" />
-      <AutoScrollRow title="Vitamins & Supplements" href="/category/vitamins-supplements" products={vitamins} duration={32} direction="right" />
-      <AutoScrollRow title="Skincare Essentials" href="/category/skincare" products={skincare} duration={30} direction="left" />
+      <ScrollableRow title="Trending Deals" href="/category/personal-care">
+        {trendingDeals.map((p, i) => <ProductCard key={i} {...p} />)}
+      </ScrollableRow>
+
+      <ScrollableRow title="Vitamins & Supplements" href="/category/vitamins-supplements">
+        {vitamins.map((p, i) => <ProductCard key={i} {...p} />)}
+      </ScrollableRow>
+
+      <ScrollableRow title="Skincare Essentials" href="/category/skincare">
+        {skincare.map((p, i) => <ProductCard key={i} {...p} />)}
+      </ScrollableRow>
     </section>
   );
 };
