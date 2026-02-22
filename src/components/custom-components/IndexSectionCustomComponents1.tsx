@@ -20,8 +20,17 @@ const categories = [
   { name: 'Sport Nutrition', href: '/category/sport-nutrition' },
 ];
 
+const cartItems = [
+  { name: 'CeraVe Moisturizing Cream', qty: 2, price: 79.0, img: 'https://picsum.photos/seed/skin1/100/100', slug: 'cerave-moisturizing-cream-473ml' },
+  { name: 'Nature Made Vitamin D3', qty: 1, price: 45.0, img: 'https://picsum.photos/seed/vit2/100/100', slug: 'nature-made-vitamin-d3-5000iu' },
+  { name: 'Bioderma Sensibio H2O', qty: 1, price: 95.0, img: 'https://picsum.photos/seed/skin3/100/100', slug: 'bioderma-sensibio-h2o-500ml' },
+];
+
+const cartTotal = cartItems.reduce((s, item) => s + item.price * item.qty, 0);
+
 const IndexSectionCustomComponents1: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [lang, setLang] = useState<'EN' | 'AR'>('EN');
@@ -124,15 +133,15 @@ const IndexSectionCustomComponents1: React.FC = () => {
                 </svg>
                 <span className="text-sm font-medium">Account</span>
               </a>
-              <a href="#" className="relative flex items-center gap-2 text-neutral-600 hover:text-neutral-900 transition duration-200">
+              <button onClick={() => setCartOpen(true)} className="relative flex items-center gap-2 text-neutral-600 hover:text-neutral-900 transition duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <circle cx={9} cy={21} r={1} />
                   <circle cx={20} cy={21} r={1} />
                   <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
                 </svg>
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium">3</span>
+                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium">{cartItems.length}</span>
                 <span className="hidden md:inline text-sm font-medium">Cart</span>
-              </a>
+              </button>
 
               {/* Mobile Hamburger */}
               <button
@@ -259,6 +268,107 @@ const IndexSectionCustomComponents1: React.FC = () => {
         </div>
       )}
 
+      {/* Cart Sidebar Overlay */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-[60]">
+          <div className="fixed inset-0 bg-black/40" onClick={() => setCartOpen(false)} />
+          <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl flex flex-col">
+            {/* Cart Header */}
+            <div className="flex items-center justify-between p-5 border-b border-neutral-100">
+              <div className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="text-neutral-900">
+                  <circle cx={9} cy={21} r={1} />
+                  <circle cx={20} cy={21} r={1} />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                </svg>
+                <h2 className="text-lg font-bold text-neutral-900">Your Cart</h2>
+                <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">{cartItems.length} items</span>
+              </div>
+              <button onClick={() => setCartOpen(false)} className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-colors">
+                <svg className="w-4 h-4 text-neutral-600" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} fill="none">
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Free shipping bar */}
+            <div className="px-5 py-3 bg-green-50 border-b border-green-100">
+              <div className="flex items-center gap-2 text-sm">
+                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                </svg>
+                {cartTotal >= 50 ? (
+                  <span className="text-green-700 font-medium">You qualify for <strong>FREE delivery!</strong></span>
+                ) : (
+                  <span className="text-green-700 font-medium">Add <strong>{(50 - cartTotal).toFixed(3)} KWD</strong> more for free delivery</span>
+                )}
+              </div>
+              <div className="mt-2 h-1.5 bg-green-200 rounded-full overflow-hidden">
+                <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${Math.min(100, (cartTotal / 50) * 100)}%` }} />
+              </div>
+            </div>
+
+            {/* Cart Items */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              {cartItems.map((item) => (
+                <div key={item.slug} className="flex gap-4 p-3 bg-neutral-50 rounded-xl">
+                  <Link href={`/product/${item.slug}`} onClick={() => setCartOpen(false)}>
+                    <img src={item.img} alt={item.name} className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/product/${item.slug}`} onClick={() => setCartOpen(false)} className="text-sm font-semibold text-neutral-900 hover:text-green-600 transition-colors line-clamp-2">{item.name}</Link>
+                    <p className="text-sm font-bold text-green-600 mt-1">{item.price.toFixed(3)} KWD</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden">
+                        <button className="w-8 h-8 flex items-center justify-center text-neutral-500 hover:bg-neutral-100 transition-colors text-lg">-</button>
+                        <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-neutral-900 border-x border-neutral-200">{item.qty}</span>
+                        <button className="w-8 h-8 flex items-center justify-center text-neutral-500 hover:bg-neutral-100 transition-colors text-lg">+</button>
+                      </div>
+                      <button className="ml-auto text-neutral-400 hover:text-red-500 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Cart Footer */}
+            <div className="border-t border-neutral-100 p-5 space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="font-semibold text-neutral-900">{cartTotal.toFixed(3)} KWD</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-500">Shipping</span>
+                  <span className="font-semibold text-green-600">FREE</span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-neutral-100">
+                <span className="text-base font-bold text-neutral-900">Total</span>
+                <span className="text-xl font-bold text-green-600">{cartTotal.toFixed(3)} KWD</span>
+              </div>
+              <Link
+                href="/checkout"
+                onClick={() => setCartOpen(false)}
+                className="block w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-center rounded-full transition-colors"
+              >
+                Proceed to Checkout
+              </Link>
+              <button
+                onClick={() => setCartOpen(false)}
+                className="block w-full py-3 border border-neutral-200 text-neutral-700 font-semibold text-center rounded-full hover:bg-neutral-50 transition-colors text-sm"
+              >
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-neutral-200 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-around py-2">
@@ -277,15 +387,15 @@ const IndexSectionCustomComponents1: React.FC = () => {
             </svg>
             <span className="text-[10px] font-medium text-neutral-500">Brands</span>
           </Link>
-          <a href="#" className="flex flex-col items-center gap-0.5 px-3 py-1 relative">
+          <button onClick={() => setCartOpen(true)} className="flex flex-col items-center gap-0.5 px-3 py-1 relative">
             <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="text-neutral-400">
               <circle cx={9} cy={21} r={1} />
               <circle cx={20} cy={21} r={1} />
               <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
             </svg>
-            <span className="absolute -top-0.5 right-1 bg-green-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+            <span className="absolute -top-0.5 right-1 bg-green-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cartItems.length}</span>
             <span className="text-[10px] font-medium text-neutral-500">Cart</span>
-          </a>
+          </button>
           <a href="#" className="flex flex-col items-center gap-0.5 px-3 py-1">
             <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="text-neutral-400">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
