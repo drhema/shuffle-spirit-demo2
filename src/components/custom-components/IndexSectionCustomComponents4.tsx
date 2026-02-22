@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 interface ProductCardProps {
   slug: string;
@@ -134,8 +133,10 @@ const products: ProductCardProps[] = [
 ];
 
 const IndexSectionCustomComponents4: React.FC = () => {
-  const [paused, setPaused] = useState(false);
-  const duplicated = [...products, ...products];
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({ left: dir === 'left' ? -300 : 300, behavior: 'smooth' });
+  };
 
   return (
     <section className="py-10 md:py-16 bg-neutral-50">
@@ -145,33 +146,22 @@ const IndexSectionCustomComponents4: React.FC = () => {
             <h2 className="font-heading text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight mb-1">Featured Products</h2>
             <p className="text-neutral-600">Handpicked bestsellers for you</p>
           </div>
-          <Link href="/category/vitamins-supplements" className="hidden sm:inline-flex items-center gap-1 px-5 py-2.5 bg-navy-500 text-white font-semibold text-sm rounded-full hover:bg-navy-600 transition-colors mt-3 sm:mt-0">
-            View All
-            <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
-          </Link>
+          <div className="flex items-center gap-3 mt-3 sm:mt-0">
+            <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+            <Link href="/category/vitamins-supplements" className="hidden sm:inline-flex items-center gap-1 px-5 py-2.5 bg-navy-500 text-white font-semibold text-sm rounded-full hover:bg-navy-600 transition-colors">
+              View All
+              <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="9 18 15 12 9 6" /></svg>
+            </Link>
+          </div>
         </div>
       </div>
-      <div
-        className="overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
-      >
-        <motion.div
-          className="flex gap-4 px-4"
-          animate={{ x: paused ? undefined : ['0%', '-50%'] }}
-          transition={{
-            x: {
-              duration: 35,
-              repeat: Infinity,
-              ease: 'linear',
-            },
-          }}
-          style={{ width: 'max-content' }}
-        >
-          {duplicated.map((p, i) => <ProductCard key={i} {...p} />)}
-        </motion.div>
+      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide px-4">
+        {products.map((p, i) => <ProductCard key={i} {...p} />)}
       </div>
     </section>
   );
