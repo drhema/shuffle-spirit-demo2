@@ -5,7 +5,7 @@ import IndexSectionCustomComponents2 from '../components/custom-components/Index
 import IndexSectionCustomComponents3 from '../components/custom-components/IndexSectionCustomComponents3';
 import IndexSectionCustomComponents4 from '../components/custom-components/IndexSectionCustomComponents4';
 import IndexSectionCustomComponents5 from '../components/custom-components/IndexSectionCustomComponents5';
-import IndexSectionCustomComponents6 from '../components/custom-components/IndexSectionCustomComponents6';
+
 import IndexSectionCustomComponents7 from '../components/custom-components/IndexSectionCustomComponents7';
 import IndexSectionCustomComponents8 from '../components/custom-components/IndexSectionCustomComponents8';
 import IndexSectionCustomComponents9 from '../components/custom-components/IndexSectionCustomComponents9';
@@ -41,8 +41,6 @@ const Index: React.FC = () => {
       <IndexSectionCustomComponents8 />
       {/* Category Navigation Grid */}
       <IndexSectionCustomComponents9 />
-      {/* Newsletter */}
-      <IndexSectionCustomComponents6 />
       {/* Footer */}
       <IndexSectionCustomComponents10 />
     </>
