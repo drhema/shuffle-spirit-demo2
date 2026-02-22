@@ -1,0 +1,35 @@
+@tailwind base; @tailwind components; @tailwind utilities; .input-checkbox-05:checked + div svg {
+  @apply block;
+}
+
+.input-radio-1-06:checked + div svg {
+  @apply block;
+}
+
+.input-radio-2-06:checked + div svg {
+  @apply block;
+}
+
+.input-radio-1-07:checked + div svg {
+  @apply block;
+}
+
+.input-radio-2-07:checked + div svg {
+  @apply block;
+}
+
+.input-checkbox-contact-1-02:checked + div svg {
+  @apply block;
+}
+
+.input-checkbox-contact-1-03:checked + div svg {
+  @apply block;
+}
+
+.input-checkbox-contact-1-04:checked + div svg {
+  @apply block;
+}
+
+.input-checkbox-contact-1-05:checked + div svg {
+  @apply block;
+}
